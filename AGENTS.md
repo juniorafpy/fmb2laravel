@@ -7,6 +7,8 @@ Monorepo del producto comunitario `fmb2laravel` (MIT, público).
 - `packages/core/` — lector heurístico de `.fmb`, IR, catálogo, comandos. PHP puro,
   **sin dependencias de runtime** (solo `ext-mbstring`).
 - `bin/fmb2laravel` — CLI (usa el autoloader de Composer si existe; si no, uno propio).
+- `panel/` — panel web (Laravel + Filament) para subir `.fmb` y ver el catálogo;
+  sin login; consume `packages/core` vía path repository de Composer.
 - `tests/` — PHPUnit. Fixtures sintéticos en `tests/Fixtures/` (nunca se commitean
   `.fmb` reales; `forms/` está en `.gitignore`).
 - `docs/` — documentación de la IR, compatibilidad y publicación.
@@ -19,7 +21,9 @@ Monorepo del producto comunitario `fmb2laravel` (MIT, público).
 
 ## Reglas
 
-- `declare(strict_types=1)` en todos los archivos; clases `final` salvo necesidad.
+- `declare(strict_types=1)` y clases `final` salvo necesidad en `packages/core/` y
+  `bin/`; `panel/` sigue las convenciones estándar de Laravel/Filament (estilo
+  artisan, sin `strict_types`).
 - Toda la salida de usuario en español (es el público inicial), docs EN principal + ES.
 - Regla de oro: **nunca fallar en silencio** — lo no traducible se exporta como PL/SQL
   + aviso en `warnings` de la IR.

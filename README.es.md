@@ -49,6 +49,23 @@ php bin/fmb2laravel extract /ruta/A/MIFORM.fmb --out=catalog
 | `<form>.conflicts.json` | Objetos con versiones divergentes (se marca la conservada) |
 | `<form>.reglas.json` / `<form>.reglas.md` | Análisis de reglas de negocio para el porting |
 
+## Panel web (opcional)
+
+¿Prefieres clic a teclado? [`panel/`](panel/) es un panel Filament listo para usar:
+suelta un `.fmb` en el navegador y explora/descarga el catálogo extraído. Herramienta
+local, sin Oracle y sin login.
+
+```bash
+cd panel
+composer install
+cp .env.example .env      # Windows: copy .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve --port=8001
+```
+
+Abre http://localhost:8001 — detalles en [panel/README.md](panel/README.md).
+
 ## Cómo funciona
 
 Un `.fmb` de Oracle Forms 6i guarda el PL/SQL compilado como registros con longitud:
