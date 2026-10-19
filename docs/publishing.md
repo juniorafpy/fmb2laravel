@@ -3,6 +3,15 @@
 Pasos para convertir este repo local en el proyecto público `fmb2laravel`.
 Requieren la máquina del autor (git + cuenta de GitHub).
 
+## Estado (19-oct-2026)
+
+- [x] Git instalado (2.55) y repo local con commit inicial.
+- [x] Repo público creado: `juniorafpy/fmb2laravel` + push de `main` + CI corriendo.
+- [x] Badge de CI y URL de clone actualizados en README.md / README.es.md.
+- [ ] Decidir titular del copyright en `LICENSE` (hoy: `fmb2laravel contributors`).
+- [ ] Primer tag `v0.1.0` y publicación en Packagist cuando haya release.
+- [ ] Espejo del demo sintético de Form Builder 6i (máquina con 6i).
+
 ## 1. Instalar Git
 
 ```powershell

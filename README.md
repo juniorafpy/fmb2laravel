@@ -1,5 +1,7 @@
 # fmb2laravel
 
+[![CI](https://github.com/juniorafpy/fmb2laravel/actions/workflows/ci.yml/badge.svg)](https://github.com/juniorafpy/fmb2laravel/actions/workflows/ci.yml)
+
 **Turn Oracle Forms modules (`.fmb`) into Laravel + Filament application scaffolds — without installing Oracle.**
 
 > Status: **alpha (v0.1)**. The extraction core is field-tested against a real 177-trigger
@@ -23,7 +25,7 @@ consulting. `fmb2laravel` takes a different path:
 Requires PHP >= 8.2 with `ext-mbstring`.
 
 ```bash
-git clone https://github.com/fmb2laravel/fmb2laravel
+git clone https://github.com/juniorafpy/fmb2laravel
 cd fmb2laravel
 
 # 0. You can try the CLI without installing anything (composer is for development only):
