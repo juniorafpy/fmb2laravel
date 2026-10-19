@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+*.fmb binary
+*.phar binary

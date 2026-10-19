@@ -1,0 +1,23 @@
+{
+    "name": "fmb2laravel/core",
+    "description": "Heuristic reader and catalog extractor for Oracle Forms (.fmb) modules: IR, triggers, business rules.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "oracle-forms",
+        "fmb",
+        "parser",
+        "legacy",
+        "migration"
+    ],
+    "require": {
+        "php": "^8.2",
+        "ext-mbstring": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fmb2Laravel\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}

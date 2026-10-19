@@ -1,0 +1,48 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * fmb2laravel — CLI autonomo.
+ *
+ * Funciona con el autoloader de Composer si existe; si el repo se clono
+ * sin `composer install`, registra un autoloader minimo para que el
+ * producto sea usable con solo PHP.
+ */
+$autoloaders = [
+    __DIR__.'/../vendor/autoload.php',
+    __DIR__.'/../../../autoload.php', // cuando se instala como dependencia de Composer
+];
+
+$autoloaded = false;
+
+foreach ($autoloaders as $autoloader) {
+    if (is_file($autoloader)) {
+        require $autoloader;
+        $autoloaded = true;
+
+        break;
+    }
+}
+
+if (! $autoloaded) {
+    spl_autoload_register(static function (string $class): void {
+        $prefix = 'Fmb2Laravel\\';
+
+        if (! str_starts_with($class, $prefix)) {
+            return;
+        }
+
+        $relative = substr($class, strlen($prefix));
+        $path = __DIR__.'/../packages/core/src/'.str_replace('\\', '/', $relative).'.php';
+
+        if (is_file($path)) {
+            require $path;
+        }
+    });
+}
+
+$application = new Fmb2Laravel\Console\Application;
+
+exit($application->run($argv));

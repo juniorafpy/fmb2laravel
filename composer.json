@@ -1,0 +1,40 @@
+{
+    "name": "fmb2laravel/fmb2laravel",
+    "description": "Convert Oracle Forms (.fmb) modules into Laravel + Filament application scaffolds, without an Oracle installation.",
+    "type": "project",
+    "license": "MIT",
+    "keywords": [
+        "oracle-forms",
+        "fmb",
+        "oracle",
+        "laravel",
+        "filament",
+        "legacy",
+        "migration"
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.18",
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fmb2Laravel\\": "packages/core/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fmb2Laravel\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "lint": "pint"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}

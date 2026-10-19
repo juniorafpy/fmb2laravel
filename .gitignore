@@ -1,0 +1,10 @@
+/vendor/
+/.phpunit.cache/
+/composer.lock
+.phpunit.result.cache
+
+# Los .fmb reales de cada usuario viven aqui y NUNCA se publican.
+/forms/
+
+# Salida por defecto de `fmb2laravel extract`.
+/catalog/
