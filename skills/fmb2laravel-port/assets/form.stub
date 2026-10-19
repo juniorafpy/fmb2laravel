@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Filament\Resources\{{Resources}}\Schemas;
+
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+
+class {{Model}}Form
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->columns(2)
+            ->components([
+                Section::make('{{section_label}}')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('{{field}}')
+                            ->label('{{label}}')
+                            ->required()
+                            ->maxLength({{length}})
+                            ->validationMessages([
+                                'required' => '{{required_message}}',
+                                'max' => '{{max_message}}',
+                            ]),
+
+                        Select::make('{{fk_field}}')
+                            ->label('{{fk_label}}')
+                            ->relationship('{{relation}}', '{{display_column}}')
+                            ->searchable()
+                            ->preload(),
+
+                        DatePicker::make('{{date_field}}')
+                            ->label('{{date_label}}'),
+
+                        Toggle::make('{{boolean_field}}')
+                            ->label('{{boolean_label}}')
+                            ->default(false),
+                    ]),
+
+                Section::make('{{notes_section}}')
+                    ->schema([
+                        Textarea::make('{{notes_field}}')
+                            ->label('{{notes_label}}')
+                            ->rows(4)
+                            ->columnSpanFull(),
+                    ]),
+            ]);
+    }
+}

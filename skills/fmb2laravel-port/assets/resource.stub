@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Filament\Resources\{{Resources}};
+
+use App\Filament\Resources\{{Resources}}\Pages\Create{{Model}};
+use App\Filament\Resources\{{Resources}}\Pages\Edit{{Model}};
+use App\Filament\Resources\{{Resources}}\Pages\List{{Resources}};
+use App\Filament\Resources\{{Resources}}\Pages\View{{Model}};
+use App\Filament\Resources\{{Resources}}\Schemas\{{Model}}Form;
+use App\Filament\Resources\{{Resources}}\Tables\{{Resources}}Table;
+use App\Models\{{Model}};
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class {{Model}}Resource extends Resource
+{
+    protected static ?string $model = {{Model}}::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Outlined{{Icon}};
+
+    protected static ?string $navigationLabel = '{{plural_label}}';
+    protected static ?string $modelLabel = '{{singular_label}}';
+    protected static ?string $pluralModelLabel = '{{plural_label}}';
+    protected static ?string $recordTitleAttribute = '{{title_attribute}}';
+
+    public static function form(Schema $schema): Schema
+    {
+        return {{Model}}Form::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return {{Resources}}Table::configure($table);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => List{{Resources}}::route('/'),
+            'create' => Create{{Model}}::route('/create'),
+            'edit' => Edit{{Model}}::route('/{record}/edit'),
+            'view' => View{{Model}}::route('/{record}'),
+        ];
+    }
+}

@@ -66,6 +66,22 @@ php artisan serve --port=8001
 
 Abre http://localhost:8001 — detalles en [panel/README.md](panel/README.md).
 
+## Skill de porting con IA (opcional)
+
+[`skills/fmb2laravel-port/`](skills/fmb2laravel-port/) es una skill para agentes de
+IA (instrucciones en inglés, guía en español) que enseña a tomar un catálogo
+descargado y portar el módulo a Laravel + Filament: esquema, modelos, validaciones,
+triggers, mensajes, checklist de cobertura y tests.
+
+Se distribuye **aparte del ZIP de catálogo**: el ZIP no cambia y no incluye
+`skills/`. Instálala una vez en tu agente:
+
+- opencode: `<proyecto>/.opencode/skills/fmb2laravel-port/`
+- Claude Code: `<proyecto>/.claude/skills/fmb2laravel-port/`
+- otros agentes: usa [`PROMPT.md`](skills/fmb2laravel-port/PROMPT.md)
+
+Guía completa en [`README.es.md`](skills/fmb2laravel-port/README.es.md).
+
 ## Cómo funciona
 
 Un `.fmb` de Oracle Forms 6i guarda el PL/SQL compilado como registros con longitud:

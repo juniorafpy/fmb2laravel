@@ -9,6 +9,9 @@ Monorepo del producto comunitario `fmb2laravel` (MIT, público).
 - `bin/fmb2laravel` — CLI (usa el autoloader de Composer si existe; si no, uno propio).
 - `panel/` — panel web (Laravel + Filament) para subir `.fmb` y ver el catálogo;
   sin login; consume `packages/core` vía path repository de Composer.
+- `skills/fmb2laravel-port/` — skill para agentes IA (instrucciones EN + guía ES) que
+  enseña a portar cualquier catálogo a Laravel + Filament; se distribuye aparte y no
+  se incluye en el ZIP de catálogo.
 - `tests/` — PHPUnit. Fixtures sintéticos en `tests/Fixtures/` (nunca se commitean
   `.fmb` reales; `forms/` está en `.gitignore`).
 - `docs/` — documentación de la IR, compatibilidad y publicación.

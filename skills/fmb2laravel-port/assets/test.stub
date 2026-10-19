@@ -1,0 +1,49 @@
+<?php
+
+namespace Tests\Feature\{{Module}};
+
+use App\Filament\Resources\{{Resources}}\Pages\Create{{Model}};
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Tests\TestCase;
+
+class {{Model}}Test extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_{{rule}}_is_enforced(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test(Create{{Model}}::class)
+            ->fillForm([
+                '{{field}}' => '{{invalid_value}}',
+            ])
+            ->call('create')
+            ->assertHasFormErrors(['{{field}}']);
+
+        // Assert the exact user-facing message:
+        // ->assertSee('{{exact_message}}');
+
+        $this->assertDatabaseMissing('{{table}}', [
+            '{{field}}' => '{{invalid_value}}',
+        ]);
+    }
+
+    public function test_{{rule}}_accepts_valid_data(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test(Create{{Model}}::class)
+            ->fillForm([
+                '{{field}}' => '{{valid_value}}',
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('{{table}}', [
+            '{{field}}' => '{{valid_value}}',
+        ]);
+    }
+}

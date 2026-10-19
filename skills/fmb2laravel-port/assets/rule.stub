@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Rules;
+
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+
+final class {{Rule}} implements ValidationRule
+{
+    /**
+     * Rename the dependency to the value the rule actually needs.
+     */
+    public function __construct(
+        private readonly mixed $other = null,
+    ) {}
+
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        // Port the trigger condition here.
+        // if ({{invalid_condition}}) {
+        //     $fail('{{exact_message}}');
+        // }
+    }
+}

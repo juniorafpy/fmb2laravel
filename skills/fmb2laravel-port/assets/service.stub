@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Services\{{Module}};
+
+use App\Models\{{Model}};
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
+final class {{Action}}
+{
+    /**
+     * Port one Forms use case (button, PRE/POST trigger, program unit).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function handle({{Model}} $model, array $data = []): {{Model}}
+    {
+        return DB::transaction(function () use ($model, $data) {
+            $model = {{Model}}::query()
+                ->lockForUpdate()
+                ->findOrFail($model->getKey());
+
+            // Port the trigger condition here. Keep the exact message.
+            // if ({{condition}}) {
+            //     throw ValidationException::withMessages([
+            //         '{{field}}' => '{{exact_message}}',
+            //     ]);
+            // }
+
+            $model->update($data);
+
+            // POST-* side effects that must run after commit:
+            // event(new {{Event}}($model));
+            // {{Job}}::dispatch($model)->afterCommit();
+
+            return $model->refresh();
+        });
+    }
+}

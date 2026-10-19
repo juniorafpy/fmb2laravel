@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Observers;
+
+use App\Models\{{Model}};
+use Illuminate\Validation\ValidationException;
+
+class {{Model}}Observer
+{
+    /**
+     * PRE-INSERT / PRE-UPDATE invariants.
+     */
+    public function saving({{Model}} $model): void
+    {
+        // if ({{condition}}) {
+        //     throw ValidationException::withMessages([
+        //         '{{field}}' => '{{exact_message}}',
+        //     ]);
+        // }
+    }
+
+    /**
+     * POST-INSERT side effects.
+     */
+    public function created({{Model}} $model): void
+    {
+        // Queue notifications or write audit rows.
+    }
+
+    /**
+     * POST-UPDATE side effects.
+     */
+    public function updated({{Model}} $model): void
+    {
+        // React only to the relevant changes:
+        // if ($model->wasChanged('{{field}}')) { ... }
+    }
+
+    /**
+     * PRE-DELETE guard.
+     */
+    public function deleting({{Model}} $model): void
+    {
+        // if ({{blocking_condition}}) {
+        //     throw ValidationException::withMessages([
+        //         '{{field}}' => '{{exact_message}}',
+        //     ]);
+        // }
+    }
+
+    /**
+     * POST-DELETE cleanup.
+     */
+    public function deleted({{Model}} $model): void
+    {
+        // Clean up files, children or external references.
+    }
+}
