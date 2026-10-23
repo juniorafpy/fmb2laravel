@@ -1,7 +1,7 @@
 # Publicación (checklist)
 
 Pasos para convertir este repo local en el proyecto público `fmb2laravel`.
-Requieren la máquina del autor (git + cuenta de GitHub).
+Requieren una máquina con Git y una cuenta de GitHub.
 
 ## Estado (19-oct-2026)
 
@@ -23,13 +23,14 @@ git --version
 ## 2. Crear el repositorio y primer commit
 
 ```powershell
-cd C:\Users\Junior\Desktop\Proyectos\fmb2laravel
+cd $env:USERPROFILE\proyectos\fmb2laravel  # ajusta la ruta
 git init -b main
 git add .
 git commit -m "v0.1: extractor heurístico de .fmb + IR + CLI"
 ```
 
-> La firma de commits se configura en `~/.gitconfig` (nombre/correo del autor).
+> La firma de commits se configura con `git config --global user.name "Tu Nombre"` y
+> `git config --global user.email "tu@email"`.
 
 ## 3. Crear el repo en GitHub
 
@@ -48,10 +49,10 @@ git remote add origin https://github.com/<usuario>/fmb2laravel.git
 git push -u origin main
 ```
 
-## 4. Detalles a elegir por el autor (buscar TODO-DECISION)
+## 4. Detalles a elegir por el mantenedor (buscar TODO-DECISION)
 
 - [ ] **Titular del copyright** en `LICENSE` (hoy dice `fmb2laravel contributors`).
-- [ ] ¿Cuenta personal u organización `fmb2laravel` en GitHub?
+- [ ] ¿Cuenta de usuario u organización `fmb2laravel` en GitHub?
 - [ ] Repositorio espejo del demo sintético de Form Builder 6i (se creará en la
       máquina con 6i) en `tests/fixtures/demo/` o releases.
 
