@@ -60,9 +60,9 @@ class FmbImportTest extends TestCase
         $this->assertSame(7, $importacion->resumen['triggers']);
         $this->assertSame(1, $importacion->resumen['program_units']);
         $this->assertSame(1, $importacion->resumen['conflictos']);
-        $this->assertSame(1548, $importacion->tamano);
+        $this->assertSame(1534, $importacion->tamano);
         $this->assertSame(
-            '4472143b791fe287ba42736751915c009bef1360780bb3a427ba5ca694572ac8',
+            '7028e6e50de490da85b47d83c2d0dff8bb31dc473e68bd94dc26baaa7668c07a',
             $importacion->sha256,
         );
 

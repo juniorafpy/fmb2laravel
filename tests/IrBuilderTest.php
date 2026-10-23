@@ -33,13 +33,13 @@ final class IrBuilderTest extends TestCase
     {
         $data = SyntheticFmbFactory::file(
             SyntheticFmbFactory::record(
-                'WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)',
-                ["SELECT COUNT(*) FROM tareas WHERE cod = 1;\n", "message('Debe indicar estado');\n"],
+                'WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)',
+                ["SELECT COUNT(*) FROM entities WHERE cod = 1;\n", "message('Debe indicar un valor');\n"],
                 SyntheticFmbFactory::pid(10, '01', 'ENE', '2024', '08', '00', '00'),
             ),
             SyntheticFmbFactory::record(
-                'ON-CHECK-DELETE-MASTER (B_TAREAS)',
-                ["DELETE FROM tarea_afectada WHERE cod = 1;\n"],
+                'ON-CHECK-DELETE-MASTER (B_ENTITY)',
+                ["DELETE FROM detail_table WHERE cod = 1;\n"],
                 SyntheticFmbFactory::pid(11, '02', 'ENE', '2024', '08', '00', '00'),
             ),
             SyntheticFmbFactory::record(
@@ -70,11 +70,11 @@ final class IrBuilderTest extends TestCase
 
         $block = $ir['blocks'][0];
 
-        $this->assertSame('B_TAREAS', $block['name']);
-        $this->assertSame('TAREAS', $block['candidateTable']);
+        $this->assertSame('B_ENTITY', $block['name']);
+        $this->assertSame('ENTITY', $block['candidateTable']);
         $this->assertSame([1], $block['triggers']);
         $this->assertSame([2], $block['items'][0]['triggers']);
-        $this->assertSame('COD_ESTADO', $block['items'][0]['name']);
+        $this->assertSame('STATUS', $block['items'][0]['name']);
 
         // Orden alfabetico de triggers: KEY-CLRFRM (0), ON-CHECK (1), WHEN-VALIDATE (2).
         $this->assertNull($ir['triggers'][0]['block']);
@@ -83,16 +83,16 @@ final class IrBuilderTest extends TestCase
         $entry = $ir['triggers'][2];
 
         $this->assertSame('WHEN-VALIDATE-ITEM', $entry['type']);
-        $this->assertSame('B_TAREAS.COD_ESTADO', $entry['scope']);
-        $this->assertSame('B_TAREAS', $entry['block']);
-        $this->assertSame('COD_ESTADO', $entry['item']);
+        $this->assertSame('B_ENTITY.STATUS', $entry['scope']);
+        $this->assertSame('B_ENTITY', $entry['block']);
+        $this->assertSame('STATUS', $entry['item']);
         $this->assertSame('logica', $entry['classification']);
-        $this->assertSame(['tareas'], $entry['readsTables']);
-        $this->assertSame(['Debe indicar estado'], $entry['messages']);
+        $this->assertSame(['entities'], $entry['readsTables']);
+        $this->assertSame(['Debe indicar un valor'], $entry['messages']);
 
-        $this->assertSame(['tarea_afectada', 'tareas'], $ir['tables']['referenced']);
-        $this->assertSame(['TAREA_AFECTADA'], $ir['tables']['written']);
-        $this->assertSame(['Debe indicar estado'], $ir['messages']);
+        $this->assertSame(['detail_table', 'entities'], $ir['tables']['referenced']);
+        $this->assertSame(['DETAIL_TABLE'], $ir['tables']['written']);
+        $this->assertSame(['Debe indicar un valor'], $ir['messages']);
 
         $codes = array_column($ir['warnings'], 'code');
 

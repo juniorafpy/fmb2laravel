@@ -89,7 +89,7 @@ An Oracle Forms 6i `.fmb` stores compiled PL/SQL as length-prefixed records:
 ```
 [len]"P<id>_<DD>_<MON>_<YYYY><HH>_<MM>_<SS>"   <- object id + compilation date
 [len]"BEGIN\n" ... [len]chunk ... [len]"\nEND;"  <- PL/SQL body
-[len]"WHEN-VALIDATE-ITEM (B_TAREAS.COD_X)"       <- object name
+[len]"WHEN-VALIDATE-ITEM (B_ENTITY.ITEM)"        <- object name
 ```
 
 The parser scans for those records, decodes them (CP1252 → UTF-8), groups by object

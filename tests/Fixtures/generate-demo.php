@@ -35,11 +35,11 @@ $data = F::file(
         F::pid(2, '10', 'MAR', '2021', '09', '20', '00'),
     ),
     F::record(
-        'WHEN-VALIDATE-ITEM (B_DEMO.COD_ESTADO)',
+        'WHEN-VALIDATE-ITEM (B_DEMO.STATUS)',
         [
             "SELECT descripcion INTO v_desc\n",
-            "  FROM demo_estados\n",
-            " WHERE cod_estado = :b_demo.cod_estado;\n",
+            "  FROM demo_statuses\n",
+            " WHERE status = :b_demo.status;\n",
             "if v_desc is null then\n",
             "  message('Estado invalido');\n",
             "end if;\n",
@@ -49,16 +49,16 @@ $data = F::file(
     F::record(
         'WHEN-BUTTON-PRESSED (B_DEMO.BTN_GRABAR)',
         [
-            "INSERT INTO demo_tareas (cod, descripcion) VALUES (:b_demo.cod, :b_demo.descripcion);\n",
+            "INSERT INTO demo_records (cod, descripcion) VALUES (:b_demo.cod, :b_demo.descripcion);\n",
             "commit_form;\n",
         ],
         F::pid(4, '12', 'MAR', '2021', '11', '30', '00'),
     ),
     F::record(
-        'WHEN-LIST-CHANGED (B_DEMO.COD_ESTADO)',
+        'WHEN-LIST-CHANGED (B_DEMO.STATUS)',
         [
             "do_key('list_values');\n",
-            "v := get_item_property('b_demo.cod_estado', lov_name);\n",
+            "v := get_item_property('b_demo.status', lov_name);\n",
         ],
         F::pid(5, '13', 'MAR', '2021', '12', '00', '00'),
     ),
@@ -85,7 +85,7 @@ $data = F::file(
     F::legacyRecord(
         'ON-CHECK-DELETE-MASTER (B_DEMO)',
         [
-            "alerta('No se puede borrar: existen detalles asociados');\n",
+            "alerta('Operacion no permitida: existen detalles asociados');\n",
         ],
     ),
     // Program unit.

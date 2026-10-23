@@ -52,7 +52,8 @@ final class RuleAnalyzer
             return 'boilerplate_lov';
         }
 
-        if (str_contains($source, 'LOV_NAME') && str_contains($source, 'barra.LOV')) {
+        // Navegacion boilerplate: un LOV_NAME y una asignacion <bloque>.LOV.
+        if (str_contains($source, 'LOV_NAME') && preg_match('/\b[a-z_][a-z0-9_$]*\.lov\b/i', $source) === 1) {
             return 'boilerplate_nav';
         }
 

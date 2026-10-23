@@ -15,8 +15,8 @@ final class CodeRecordScannerTest extends TestCase
     {
         $data = SyntheticFmbFactory::file(
             SyntheticFmbFactory::record(
-                'WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)',
-                ["if :b_tareas.cod_estado is null then\n", "  null;\n", 'end if;'],
+                'WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)',
+                ["if :b_entity.status is null then\n", "  null;\n", 'end if;'],
                 SyntheticFmbFactory::pid(19, '17', 'NOV', '2011', '07', '24', '32'),
             ),
         );
@@ -28,13 +28,13 @@ final class CodeRecordScannerTest extends TestCase
         $this->assertSame([], $outcome->conflicts);
         $this->assertSame(1, $outcome->totalRecords);
 
-        $trigger = $outcome->triggers['WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)'];
+        $trigger = $outcome->triggers['WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)'];
 
         $this->assertSame('P19_17_NOV_201107_24_32', $trigger->pid);
         $this->assertSame('17-NOV-2011 07:24:32', $trigger->modified);
         $this->assertSame(1, $trigger->versions);
         $this->assertSame(
-            "BEGIN\nif :b_tareas.cod_estado is null then\n  null;\nend if;\nEND;",
+            "BEGIN\nif :b_entity.status is null then\n  null;\nend if;\nEND;",
             $trigger->source,
         );
     }
@@ -73,12 +73,12 @@ final class CodeRecordScannerTest extends TestCase
     {
         $data = SyntheticFmbFactory::file(
             SyntheticFmbFactory::record(
-                'WHEN-BUTTON-PRESSED (B_TAREAS.BTN_OK)',
+                'WHEN-BUTTON-PRESSED (B_ENTITY.BTN_OK)',
                 ["v := 1;\n"],
                 SyntheticFmbFactory::pid(10, '01', 'ENE', '2024', '08', '00', '00'),
             ),
             SyntheticFmbFactory::record(
-                'WHEN-BUTTON-PRESSED (B_TAREAS.BTN_OK)',
+                'WHEN-BUTTON-PRESSED (B_ENTITY.BTN_OK)',
                 ["v := 2;\n", "commit_form;\n"],
                 SyntheticFmbFactory::pid(11, '02', 'FEB', '2024', '09', '15', '10'),
             ),
@@ -91,13 +91,13 @@ final class CodeRecordScannerTest extends TestCase
 
         $conflict = $outcome->conflicts[0];
 
-        $this->assertSame('WHEN-BUTTON-PRESSED (B_TAREAS.BTN_OK)', $conflict['name']);
+        $this->assertSame('WHEN-BUTTON-PRESSED (B_ENTITY.BTN_OK)', $conflict['name']);
         $this->assertSame(2, $conflict['versions']);
         $this->assertSame('02-FEB-2024 09:15:10', $conflict['kept']);
         $this->assertSame('P11_02_FEB_202409_15_10', $conflict['kept_pid']);
         $this->assertCount(2, $conflict['all']);
 
-        $trigger = $outcome->triggers['WHEN-BUTTON-PRESSED (B_TAREAS.BTN_OK)'];
+        $trigger = $outcome->triggers['WHEN-BUTTON-PRESSED (B_ENTITY.BTN_OK)'];
 
         $this->assertStringContainsString('v := 2;', $trigger->source);
         $this->assertStringNotContainsString('v := 1;', $trigger->source);
@@ -176,7 +176,7 @@ final class CodeRecordScannerTest extends TestCase
                 SyntheticFmbFactory::pid(3, '01', 'ENE', '2021', '08', '00', '00'),
             ),
             SyntheticFmbFactory::record(
-                'PKG_TAREAS_UTIL',
+                'PKG_ENTITY_UTIL',
                 ["procedure p is begin null; end;\n"],
                 SyntheticFmbFactory::pid(4, '02', 'ENE', '2021', '09', '00', '00'),
             ),
@@ -185,7 +185,7 @@ final class CodeRecordScannerTest extends TestCase
         $outcome = (new CodeRecordScanner($data))->scan();
 
         $this->assertSame(['WHEN-NEW-FORM-INSTANCE (PANTALLA)'], array_keys($outcome->triggers));
-        $this->assertSame(['PKG_TAREAS_UTIL'], array_keys($outcome->programUnits));
+        $this->assertSame(['PKG_ENTITY_UTIL'], array_keys($outcome->programUnits));
     }
 
     public function test_el_nombre_se_normaliza_con_trim(): void
@@ -205,13 +205,13 @@ final class CodeRecordScannerTest extends TestCase
 
     public function test_trigger_kind_interpreta_tipo_y_ambito(): void
     {
-        $this->assertTrue(TriggerKind::isTrigger('ON-CHECK-DELETE-MASTER (B_TAREAS)'));
-        $this->assertFalse(TriggerKind::isTrigger('PKG_TAREAS_UTIL'));
+        $this->assertTrue(TriggerKind::isTrigger('ON-CHECK-DELETE-MASTER (B_ENTITY)'));
+        $this->assertFalse(TriggerKind::isTrigger('PKG_ENTITY_UTIL'));
 
-        $this->assertSame('WHEN-VALIDATE-ITEM', TriggerKind::type('WHEN-VALIDATE-ITEM (B_TAREAS.COD_X)'));
-        $this->assertSame('B_TAREAS.COD_X', TriggerKind::scope('WHEN-VALIDATE-ITEM (B_TAREAS.COD_X)'));
+        $this->assertSame('WHEN-VALIDATE-ITEM', TriggerKind::type('WHEN-VALIDATE-ITEM (B_ENTITY.ITEM)'));
+        $this->assertSame('B_ENTITY.ITEM', TriggerKind::scope('WHEN-VALIDATE-ITEM (B_ENTITY.ITEM)'));
         $this->assertSame('PANTALLA', TriggerKind::scope('KEY-CLRFRM (Pantalla)'));
-        $this->assertNull(TriggerKind::type('PKG_TAREAS_UTIL'));
+        $this->assertNull(TriggerKind::type('PKG_ENTITY_UTIL'));
     }
 
     public function test_parse_pid_acepta_meses_en_espanol_e_ingles(): void

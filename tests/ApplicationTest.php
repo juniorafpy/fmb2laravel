@@ -66,9 +66,9 @@ final class ApplicationTest extends TestCase
 
         $triggers = json_decode((string) file_get_contents($out.DIRECTORY_SEPARATOR.'sample.triggers.json'), true);
 
-        $this->assertSame('WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)', $triggers[0]['name']);
+        $this->assertSame('WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)', $triggers[0]['name']);
         $this->assertSame('WHEN-VALIDATE-ITEM', $triggers[0]['type']);
-        $this->assertSame('B_TAREAS.COD_ESTADO', $triggers[0]['scope']);
+        $this->assertSame('B_ENTITY.STATUS', $triggers[0]['scope']);
 
         $ir = json_decode((string) file_get_contents($out.DIRECTORY_SEPARATOR.'sample.ir.json'), true);
         $this->assertSame('demo', $ir['module']['name']);
@@ -153,7 +153,7 @@ final class ApplicationTest extends TestCase
     {
         $data = SyntheticFmbFactory::file(
             SyntheticFmbFactory::record(
-                'WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)',
+                'WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)',
                 ["message('Hola');\n"],
                 SyntheticFmbFactory::pid(1, '01', 'ENE', '2024', '08', '00', '00'),
             ),

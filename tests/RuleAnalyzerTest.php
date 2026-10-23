@@ -24,7 +24,7 @@ final class RuleAnalyzerTest extends TestCase
 
         $this->assertSame(
             'boilerplate_nav',
-            $analyzer->classify("BEGIN\n  if LOV_NAME is not null then\n    barra.LOV := 1;\n  end if;\nEND;"),
+            $analyzer->classify("BEGIN\n  if LOV_NAME is not null then\n    b_entity.lov := 1;\n  end if;\nEND;"),
         );
     }
 
@@ -32,20 +32,20 @@ final class RuleAnalyzerTest extends TestCase
     {
         $source = <<<'PLSQL'
         BEGIN
-          SELECT t.cod_tarea, e.nombre
+          SELECT t.cod_record, e.nombre
             INTO v_cod, v_nombre
-            FROM tareas t, empleado e
-           WHERE t.cod = :b_tareas.cod_estado;
+            FROM entities t, empleado e
+           WHERE t.cod = :b_entity.status;
 
-          INSERT INTO bs.tarea_afectada (a, b) VALUES (1, 2);
-          UPDATE tareas SET x = 1 WHERE cod = 2;
-          DELETE FROM tarea_afectada WHERE a = 1;
+          INSERT INTO bs.detail_table (a, b) VALUES (1, 2);
+          UPDATE entities SET x = 1 WHERE cod = 2;
+          DELETE FROM detail_table WHERE a = 1;
 
           message('Primer mensaje');
           alerta('Segundo mensaje');
           Mensaje('Tercer mensaje');
 
-          :b_tareas.cod_estado := '1';
+          :b_entity.status := '1';
           :variables.dias := 3;
           :global.x := 2;
 
@@ -58,18 +58,18 @@ final class RuleAnalyzerTest extends TestCase
         $result = $analyzer->analyzeSource($source);
 
         $this->assertSame(
-            ['bs.tarea_afectada', 'tarea_afectada', 'tareas', 'v_cod'],
+            ['bs.detail_table', 'detail_table', 'entities', 'v_cod'],
             $result['tablas'],
         );
         $this->assertSame(
-            ['BS.TAREA_AFECTADA', 'TAREAS', 'TAREA_AFECTADA'],
+            ['BS.DETAIL_TABLE', 'DETAIL_TABLE', 'ENTITIES'],
             $result['escribe_tabla'],
         );
         $this->assertSame(
             ['Primer mensaje', 'Segundo mensaje', 'Tercer mensaje'],
             $result['mensajes'],
         );
-        $this->assertSame(['B_TAREAS.COD_ESTADO'], $result['items']);
+        $this->assertSame(['B_ENTITY.STATUS'], $result['items']);
         $this->assertSame(
             ['alerta', 'inicializa_globales', 'mensaje', 'permisos.usuario'],
             $result['llamadas'],
@@ -95,83 +95,83 @@ final class RuleAnalyzerTest extends TestCase
                 name: 'KEY-CLRFRM (PANTALLA)',
                 source: "BEGIN\n  clear_form;\nEND;",
             ),
-            'ON-CHECK-DELETE-MASTER (B_TAREAS)' => new CodeRecord(
+            'ON-CHECK-DELETE-MASTER (B_ENTITY)' => new CodeRecord(
                 offset: 100,
                 pid: 'P2_01_ENE_202408_00_01',
                 modifiedSort: '202401010800010000002',
                 modified: '01-ENE-2024 08:00:01',
-                name: 'ON-CHECK-DELETE-MASTER (B_TAREAS)',
-                source: "BEGIN\n  DELETE FROM tarea_afectada WHERE cod = 1;\n  message('No se puede borrar');\nEND;",
+                name: 'ON-CHECK-DELETE-MASTER (B_ENTITY)',
+                source: "BEGIN\n  DELETE FROM detail_table WHERE cod = 1;\n  message('Operacion no permitida');\nEND;",
             ),
-            'WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)' => new CodeRecord(
+            'WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)' => new CodeRecord(
                 offset: 200,
                 pid: 'P3_01_ENE_202408_00_02',
                 modifiedSort: '202401010800020000003',
                 modified: '01-ENE-2024 08:00:02',
-                name: 'WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)',
-                source: "BEGIN\n  SELECT COUNT(*) FROM tareas WHERE cod = 1;\n  :b_tareas.fec_inicio := sysdate;\nEND;",
+                name: 'WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)',
+                source: "BEGIN\n  SELECT COUNT(*) FROM entities WHERE cod = 1;\n  :b_entity.fec_inicio := sysdate;\nEND;",
             ),
-            'WHEN-LIST-CHANGED (B_AFECTADA.COD_MODULO)' => new CodeRecord(
+            'WHEN-LIST-CHANGED (B_DETAIL.COD_MODULO)' => new CodeRecord(
                 offset: 300,
                 pid: 'P4_01_ENE_202408_00_03',
                 modifiedSort: '202401010800030000004',
                 modified: '01-ENE-2024 08:00:03',
-                name: 'WHEN-LIST-CHANGED (B_AFECTADA.COD_MODULO)',
+                name: 'WHEN-LIST-CHANGED (B_DETAIL.COD_MODULO)',
                 source: "BEGIN\n  do_key('list_values');\n  v := get_item_property('x', y);\nEND;",
             ),
         ];
 
         $programUnits = [
-            'PKG_TAREAS_UTIL' => new CodeRecord(
+            'PKG_ENTITY_UTIL' => new CodeRecord(
                 offset: 400,
                 pid: 'P5_01_ENE_202408_00_04',
                 modifiedSort: '202401010800040000005',
                 modified: '01-ENE-2024 08:00:04',
-                name: 'PKG_TAREAS_UTIL',
+                name: 'PKG_ENTITY_UTIL',
                 source: "BEGIN\n  inicializa_globales;\nEND;",
             ),
         ];
 
         $outcome = new ScanOutcome($triggers, $programUnits, [], 6);
 
-        $analyzer = new RuleAnalyzer(['B_TAREAS' => 'TAREAS', 'B_AFECTADA' => 'BS.TAREA_AFECTADA']);
+        $analyzer = new RuleAnalyzer(['B_ENTITY' => 'ENTITY', 'B_DETAIL' => 'BS.DETAIL_TABLE']);
         $reglas = $analyzer->build('demo', $outcome);
 
         $this->assertSame('demo', $reglas['form']);
-        $this->assertSame(['tarea_afectada', 'tareas'], $reglas['tablas_globales']);
+        $this->assertSame(['detail_table', 'entities'], $reglas['tablas_globales']);
 
         $this->assertSame(
             [
-                ['name' => 'WHEN-LIST-CHANGED (B_AFECTADA.COD_MODULO)', 'clase' => 'boilerplate_lov'],
+                ['name' => 'WHEN-LIST-CHANGED (B_DETAIL.COD_MODULO)', 'clase' => 'boilerplate_lov'],
             ],
             $reglas['boilerplate'],
         );
 
-        $this->assertSame(['PANTALLA', 'B_TAREAS'], array_keys($reglas['bloques']));
-        $this->assertSame('TAREAS', $reglas['bloques']['B_TAREAS']['tabla']);
+        $this->assertSame(['PANTALLA', 'B_ENTITY'], array_keys($reglas['bloques']));
+        $this->assertSame('ENTITY', $reglas['bloques']['B_ENTITY']['tabla']);
 
-        $this->assertCount(1, $reglas['bloques']['B_TAREAS']['triggers_bloque']);
+        $this->assertCount(1, $reglas['bloques']['B_ENTITY']['triggers_bloque']);
         $this->assertSame(
-            'ON-CHECK-DELETE-MASTER (B_TAREAS)',
-            $reglas['bloques']['B_TAREAS']['triggers_bloque'][0]['nombre'],
+            'ON-CHECK-DELETE-MASTER (B_ENTITY)',
+            $reglas['bloques']['B_ENTITY']['triggers_bloque'][0]['nombre'],
         );
         $this->assertSame(
-            ['No se puede borrar'],
-            $reglas['bloques']['B_TAREAS']['triggers_bloque'][0]['mensajes'],
+            ['Operacion no permitida'],
+            $reglas['bloques']['B_ENTITY']['triggers_bloque'][0]['mensajes'],
         );
 
-        $this->assertArrayHasKey('COD_ESTADO', $reglas['bloques']['B_TAREAS']['items']);
+        $this->assertArrayHasKey('STATUS', $reglas['bloques']['B_ENTITY']['items']);
         $this->assertSame(
             'WHEN-VALIDATE-ITEM',
-            $reglas['bloques']['B_TAREAS']['items']['COD_ESTADO'][0]['tipo'],
+            $reglas['bloques']['B_ENTITY']['items']['STATUS'][0]['tipo'],
         );
         $this->assertSame(
-            ['tareas'],
-            $reglas['bloques']['B_TAREAS']['items']['COD_ESTADO'][0]['tablas'],
+            ['entities'],
+            $reglas['bloques']['B_ENTITY']['items']['STATUS'][0]['tablas'],
         );
         $this->assertSame(
-            ['B_TAREAS.FEC_INICIO'],
-            $reglas['bloques']['B_TAREAS']['items']['COD_ESTADO'][0]['items_afectados'],
+            ['B_ENTITY.FEC_INICIO'],
+            $reglas['bloques']['B_ENTITY']['items']['STATUS'][0]['items_afectados'],
         );
 
         $this->assertArrayHasKey('PANTALLA', $reglas['bloques']);
@@ -188,24 +188,24 @@ final class RuleAnalyzerTest extends TestCase
     public function test_markdown_incluye_secciones(): void
     {
         $triggers = [
-            'WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)' => new CodeRecord(
+            'WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)' => new CodeRecord(
                 offset: 0,
                 pid: 'P1_01_ENE_202408_00_00',
                 modifiedSort: '202401010800000000001',
                 modified: '01-ENE-2024 08:00:00',
-                name: 'WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)',
+                name: 'WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)',
                 source: "BEGIN\n  message('Hola mundo');\nEND;",
             ),
         ];
 
-        $analyzer = new RuleAnalyzer(['B_TAREAS' => 'TAREAS']);
+        $analyzer = new RuleAnalyzer(['B_ENTITY' => 'ENTITY']);
         $reglas = $analyzer->build('demo', new ScanOutcome($triggers, [], [], 1));
         $md = $analyzer->markdown('demo', $reglas);
 
         $this->assertStringContainsString('# Catalogo de reglas - DEMO', $md);
         $this->assertStringContainsString('## Tablas referenciadas (todas)', $md);
-        $this->assertStringContainsString('## Bloque `B_TAREAS`  (tabla: `TAREAS`)', $md);
-        $this->assertStringContainsString('### Item `B_TAREAS.COD_ESTADO`', $md);
+        $this->assertStringContainsString('## Bloque `B_ENTITY`  (tabla: `ENTITY`)', $md);
+        $this->assertStringContainsString('### Item `B_ENTITY.STATUS`', $md);
         $this->assertStringContainsString('- mensajes: Hola mundo', $md);
         $this->assertStringContainsString('## Triggers boilerplate (omitidos del detalle)', $md);
     }

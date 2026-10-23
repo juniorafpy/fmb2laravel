@@ -26,11 +26,11 @@ La **IR (Intermediate Representation)** es el contrato estable entre el lector d
   },
   "blocks": [
     {
-      "name": "B_TAREAS",
-      "candidateTable": "TAREAS",   // inferida (B_X -> X); ajustable con --config
+      "name": "B_ENTITY",
+      "candidateTable": "ENTITY",   // inferida (B_X -> X); ajustable con --config
       "triggers": [1, 2],            // ids de triggers de nivel bloque
       "items": [
-        { "name": "COD_ESTADO", "triggers": [3] }
+        { "name": "STATUS", "triggers": [3] }
       ],
       "triggerCount": 5,
       "itemCount": 61
@@ -39,27 +39,27 @@ La **IR (Intermediate Representation)** es el contrato estable entre el lector d
   "triggers": [
     {
       "id": 3,
-      "name": "WHEN-VALIDATE-ITEM (B_TAREAS.COD_ESTADO)",
+      "name": "WHEN-VALIDATE-ITEM (B_ENTITY.STATUS)",
       "type": "WHEN-VALIDATE-ITEM",   // null para program units
-      "scope": "B_TAREAS.COD_ESTADO",
-      "block": "B_TAREAS",            // null si es de nivel formulario (PANTALLA)
-      "item": "COD_ESTADO",
+      "scope": "B_ENTITY.STATUS",
+      "block": "B_ENTITY",            // null si es de nivel formulario (PANTALLA)
+      "item": "STATUS",
       "modified": "17-NOV-2011 07:24:32",
       "pid": "P19_17_NOV_201107_24_32",
       "versions": 1,                   // nº de versiones encontradas en el binario
       "lines": 12,
       "classification": "logica",      // logica | boilerplate_lov | boilerplate_nav
-      "readsTables": ["tareas"],
-      "writesTables": ["TAREAS"],
-      "messages": ["Debe indicar estado"],
-      "itemsReferenced": ["B_TAREAS.FEC_INICIO"],
+      "readsTables": ["entities"],
+      "writesTables": ["ENTITIES"],
+      "messages": ["Debe indicar un valor"],
+      "itemsReferenced": ["B_ENTITY.FEC_INICIO"],
       "calls": ["alerta", "inicializa_globales"],
       "source": "BEGIN\n..."
     }
   ],
   "conflicts": [
     {
-      "name": "WHEN-BUTTON-PRESSED (B_TAREAS.BTN_OK)",
+      "name": "WHEN-BUTTON-PRESSED (B_ENTITY.BTN_OK)",
       "versions": 2,
       "kept": "02-FEB-2024 09:15:10",
       "kept_pid": "P11_02_FEB_202409_15_10",
@@ -70,10 +70,10 @@ La **IR (Intermediate Representation)** es el contrato estable entre el lector d
     }
   ],
   "tables": {
-    "referenced": ["empleado", "tareas"],
-    "written": ["TAREAS", "TAREA_AFECTADA"]
+    "referenced": ["empleado", "entities"],
+    "written": ["ENTITIES", "DETAIL_TABLE"]
   },
-  "messages": ["No se puede borrar", "Debe indicar estado"],
+  "messages": ["Operacion no permitida", "Debe indicar un valor"],
   "warnings": [
     { "code": "HEURISTIC-LIMITS", "message": "..." }
   ]

@@ -12,14 +12,14 @@ use Fmb2Laravel\Fmb\ScanOutcome;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Validacion cruzada contra el catalogo generado por el prototipo Python
- * (fmb_parse.py / build_catalog.py) sobre un formulario real de produccion.
+ * Validacion cruzada opcional contra un catalogo de referencia local.
  *
- * Estos archivos viven en el proyecto privado del autor: si no estan
- * disponibles, el test se salta (en el repo publico no existe informacion
- * de la empresa).
+ * El .fmb y el catalogo no se publican. Para ejecutarlo, define
+ * FMB2LARAVEL_GOLDEN_FMB y, si hace falta, FMB2LARAVEL_GOLDEN_CATALOG.
+ * Sin esas entradas el test se salta y la suite publica no contiene datos
+ * de ningun formulario real.
  */
-final class GoldenBstareasTest extends TestCase
+final class GoldenLocalCatalogTest extends TestCase
 {
     public function test_extraccion_coincide_con_el_catalogo_de_referencia(): void
     {
@@ -27,15 +27,16 @@ final class GoldenBstareasTest extends TestCase
 
         if ($fmbPath === null) {
             $this->markTestSkipped(
-                'Golden test local no disponible: define FMB2LARAVEL_GOLDEN_FMB '.
-                'o coloca forms/bstareas.fmb junto al repo.'
+                'Golden test local no disponible: define FMB2LARAVEL_GOLDEN_FMB.'
             );
         }
 
         $catalogDir = $this->locateCatalog($fmbPath);
 
         if ($catalogDir === null) {
-            $this->markTestSkipped('No se encontro el directorio catalog del proyecto orcl-lara.');
+            $this->markTestSkipped(
+                'No se encontro el directorio del catalogo de referencia; define FMB2LARAVEL_GOLDEN_CATALOG.'
+            );
         }
 
         $fmb = FmbFile::open($fmbPath);
@@ -44,10 +45,9 @@ final class GoldenBstareasTest extends TestCase
 
         $expectedTriggers = $this->readJson($catalogDir.DIRECTORY_SEPARATOR.$stem.'.triggers.json');
 
-        // Salvaguarda: el catalogo de referencia tiene contenido real (no pasar
-        // trivialmente si algun dia queda vacio).
-        $this->assertGreaterThan(150, count($expectedTriggers));
-        $this->assertGreaterThan(150, count($outcome->triggers));
+        // Salvaguarda: el catalogo de referencia tiene contenido real.
+        $this->assertGreaterThan(0, count($expectedTriggers));
+        $this->assertGreaterThan(0, count($outcome->triggers));
 
         $this->compareRecordList(
             $expectedTriggers,
@@ -119,10 +119,7 @@ final class GoldenBstareasTest extends TestCase
 
         $expected = $this->readJson($reglasPath);
 
-        $analyzer = new RuleAnalyzer([
-            'B_TAREAS' => 'TAREAS',
-            'B_AFECTADA' => 'BS.TAREA_AFECTADA',
-        ]);
+        $analyzer = new RuleAnalyzer($this->blockTables($catalogDir, $stem));
 
         $actual = $analyzer->build($stem, $outcome);
 
@@ -256,19 +253,9 @@ final class GoldenBstareasTest extends TestCase
 
     private function locateFmb(): ?string
     {
-        $candidates = [
-            getenv('FMB2LARAVEL_GOLDEN_FMB') ?: null,
-            dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'orcl-lara'.DIRECTORY_SEPARATOR.'forms'.DIRECTORY_SEPARATOR.'bstareas.fmb',
-            dirname(__DIR__).DIRECTORY_SEPARATOR.'forms'.DIRECTORY_SEPARATOR.'bstareas.fmb',
-        ];
+        $candidate = getenv('FMB2LARAVEL_GOLDEN_FMB') ?: null;
 
-        foreach ($candidates as $candidate) {
-            if ($candidate !== null && is_file($candidate)) {
-                return $candidate;
-            }
-        }
-
-        return null;
+        return $candidate !== null && is_file($candidate) ? $candidate : null;
     }
 
     private function locateCatalog(string $fmbPath): ?string
@@ -285,6 +272,84 @@ final class GoldenBstareasTest extends TestCase
         }
 
         return null;
+    }
+
+    /**
+     * Mapa bloque => tabla para el analizador. Se puede forzar con
+     * FMB2LARAVEL_GOLDEN_BLOCK_TABLES (JSON). Si no, se toma de la IR o del
+     * catalogo de referencia.
+     *
+     * @return array<string, string>
+     */
+    private function blockTables(string $catalogDir, string $stem): array
+    {
+        $override = getenv('FMB2LARAVEL_GOLDEN_BLOCK_TABLES');
+
+        if (is_string($override) && $override !== '') {
+            $decoded = json_decode($override, true);
+
+            if (is_array($decoded)) {
+                $map = [];
+
+                foreach ($decoded as $block => $table) {
+                    if (is_string($block) && is_string($table)) {
+                        $map[$block] = $table;
+                    }
+                }
+
+                return $map;
+            }
+        }
+
+        $map = [];
+
+        $irPath = $catalogDir.DIRECTORY_SEPARATOR.$stem.'.ir.json';
+
+        if (is_file($irPath)) {
+            $ir = json_decode((string) file_get_contents($irPath), true);
+
+            if (is_array($ir)) {
+                foreach ($ir['blocks'] ?? [] as $block) {
+                    if (! is_array($block)) {
+                        continue;
+                    }
+
+                    $name = $block['name'] ?? null;
+                    $table = $block['candidateTable'] ?? null;
+
+                    if (is_string($name) && is_string($table) && $table !== '') {
+                        $map[$name] = $table;
+                    }
+                }
+            }
+        }
+
+        if ($map !== []) {
+            return $map;
+        }
+
+        // Ultimo recurso: usar las tablas declaradas por el catalogo esperado.
+        $reglasPath = $catalogDir.DIRECTORY_SEPARATOR.$stem.'.reglas.json';
+
+        if (is_file($reglasPath)) {
+            $reglas = json_decode((string) file_get_contents($reglasPath), true);
+
+            if (is_array($reglas)) {
+                foreach ($reglas['bloques'] ?? [] as $name => $block) {
+                    if (! is_array($block)) {
+                        continue;
+                    }
+
+                    $table = $block['tabla'] ?? null;
+
+                    if (is_string($name) && is_string($table) && $table !== '') {
+                        $map[$name] = $table;
+                    }
+                }
+            }
+        }
+
+        return $map;
     }
 
     /**

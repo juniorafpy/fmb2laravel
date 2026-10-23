@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fmb2Laravel\Fmb;
 
 /**
- * Interpreta el nombre de un objeto: "WHEN-VALIDATE-ITEM (B_TAREAS.COD_X)".
+ * Interpreta el nombre de un objeto: "WHEN-VALIDATE-ITEM (B_ENTITY.ITEM)".
  *
  * Port de TRIGGER_RE / PID_RE del prototipo Python (fmb_parse.py).
  */

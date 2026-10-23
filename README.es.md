@@ -89,7 +89,7 @@ Un `.fmb` de Oracle Forms 6i guarda el PL/SQL compilado como registros con longi
 ```
 [len]"P<id>_<DD>_<MMM>_<AAAA><HH>_<MM>_<SS>"   <- id de objeto + fecha de compilación
 [len]"BEGIN\n" ... [len]chunk ... [len]"\nEND;"  <- cuerpo PL/SQL
-[len]"WHEN-VALIDATE-ITEM (B_TAREAS.COD_X)"       <- nombre del objeto
+[len]"WHEN-VALIDATE-ITEM (B_ENTITY.ITEM)"        <- nombre del objeto
 ```
 
 El parser busca esos registros, los decodifica (CP1252 → UTF-8), agrupa por nombre de
